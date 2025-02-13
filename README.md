@@ -2,7 +2,7 @@
 
 ## Required tools for compiling and flashing devices
 
-We use the Arduino IDE for managing libraries, th Arduino CLI to compile and Flash devices, along with the esptool.py command-line tool from espressif.  
+We use the Arduino IDE for managing libraries, the Arduino CLI to compile and Flash devices, along with the esptool.py command-line tool from espressif for flashing the device.  There is a Makefile that coordinates all of these tools, but you'll need to install all three on your system.  
 
 ### Installing Arduino IDE
 
