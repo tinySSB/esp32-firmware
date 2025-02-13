@@ -61,7 +61,7 @@ esptool.py version
 Open up the Arduino IDE, click on "Tools" then "Manage Library", and add the following libraries:
 
 | Library                                           | Version |
-|-_-------------------------------------------------|---------|
+|---------------------------------------------------|---------|
 | RadioLib                                          | 7.1.2   |
 | SPI                                               | 2.0.0   | 
 | LittleFS                                          | 2.0.0   |
