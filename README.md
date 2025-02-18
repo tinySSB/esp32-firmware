@@ -2,29 +2,13 @@
 
 ## Required tools for compiling and flashing devices
 
-We use the Arduino IDE for managing libraries, th Arduino CLI to compile and Flash devices, along with the esptool.py command-line tool from espressif.  
-
-### Installing Arduino IDE
-
-Download the Arduino IDE from the [Arduino website](https://www.arduino.cc/en/software), follow the instructions given there.  
-
-Or use your systems package manager:
-For macOS and Homebrew:
-```bash
-brew update
-brew install --cask arduino-ide
-```
-
-Linux and apt
-```bash
-sudo apt update
-sudo apt install arduino
-```
+We use the Arduino CLI to compile and Flash devices, along with the esptool.py command-line tool from espressif.  
 
 ### Installing Arduino CLI
 
 Follow the instructions given [here](https://arduino.github.io/arduino-cli/0.20/installation/)
 
+If using Homebrew
 ```bash
 brew update
 brew install arduino-cli
@@ -56,26 +40,6 @@ and verify that it's installed correctly by running:
 ```bash
 esptool.py version
 ```
-
-## Installing Arduino Libraries
-Open up the Arduino IDE, click on "Tools" then "Manage Library", and add the following libraries:
-
-| Library                                           | Version |
-|-_-------------------------------------------------|---------|
-| RadioLib                                          | 7.1.2   |
-| SPI                                               | 2.0.0   | 
-| LittleFS                                          | 2.0.0   |
-| FS                                                | 2.0.0   |
-| TinyGPSPlus                                       | 1.0.3   |
-| AXP202X_Library                                   | 1.1.2   |
-| Wire                                              | 2.0.0   |
-| ESP32 BLE Arduino                                 | 2.0.0   |
-| Adafruit GFX Library                              | 1.11.7  |
-| Adafruit BusIO                                    | 1.14.1  |
-| ESP8266 and ESP32 OLED driver for SSD1306 displays| 4.6.1   |
-| Button2                                           | 2.2.4   | 
-
-You can quit out of the IDE once these libraries have been added.
 
 ## Supported devices
 ### LilyGo 
