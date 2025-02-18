@@ -2,6 +2,7 @@
 
 ## Required tools for compiling and flashing devices
 
+
 We use the Arduino CLI to compile and Flash devices, along with the esptool.py command-line tool from espressif.  
 
 ### Installing Arduino CLI
@@ -40,6 +41,7 @@ and verify that it's installed correctly by running:
 ```bash
 esptool.py version
 ```
+
 
 ## Supported devices
 ### LilyGo 

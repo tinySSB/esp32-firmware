@@ -34,6 +34,12 @@ ARDUINO_DATA=$(shell arduino-cli config get directories |awk '/data/ {print $$2}
 ARDUINO_ESP_DIR=$(ARDUINO_DATA)/packages/esp32
 # $(info ARDUINO_ESP_DIR    is   $(ARDUINO_ESP_DIR))
 
+ifeq ("$(wildcard $(ARDUINO_ESP_DIR))","")
+  $(info "installing the esp32:esp32 platform for Arduino, please be patient")
+  X=$(shell arduino-cli core install esp32:esp32;)
+  $(info "$(X)")
+endif
+
 PLATFORM_TXT_FILE=$(shell find $(ARDUINO_ESP_DIR)/hardware/esp32 -name 'platform.txt' | head -1;)
 # $(info PLATFORM_TXT_FILE  is   $(PLATFORM_TXT_FILE))
 
