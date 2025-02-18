@@ -9,39 +9,6 @@ We use the Arduino CLI to compile and Flash devices, along with the esptool.py c
 
 Follow the instructions given [here](https://arduino.github.io/arduino-cli/0.20/installation/)
 
-If using Homebrew
-```bash
-brew update
-brew install arduino-cli
-```
-
-### Installing Esptool.py
-This tool requires Python 3 to be installed on your system, to verify that you have Python 3 installed:
-```bash
-python3 --version
-```
-
-should output `Python 3` something, otherwise you'll need to install it for your system
-
-For macOS this can be done through Homebrew:
-```bash
-brew install python
-```
-
-in Linux, if you don't already have python installed you can use your package manager
-```bash
-sudo apt install python3 python3-pip
-```
-
-From here you can install esptool.py:
-```bash
-pip install esptool
-```
-and verify that it's installed correctly by running:
-```bash
-esptool.py version
-```
-
 
 ## Supported devices
 ### LilyGo 
