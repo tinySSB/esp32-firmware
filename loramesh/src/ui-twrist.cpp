@@ -9,8 +9,6 @@
 #include "hardware.h"
 #include "ui-twrist.h"
 
-void cmd_rx(String s) {}
-
 // ---------------------------------------------------------------------------
 
 #include "lib/inflate.h"
