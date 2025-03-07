@@ -18,7 +18,7 @@ Heltec, Heltec3, T5gray, TBeam, TDeck, TWatch, TWrist, WLpaper
 
 We've included a Makefile that should find your device, and the required tools (see above) for completing a complete firmware compilation.
 
-Go to the loramesh directory, and then run the following command, replacing `TDECK` with the appropriate board name for your device (see Supported Devices).
+Go to the loramesh directory, and then run the following command, replacing `TBeam` with the appropriate board name for your device (see Supported Devices).
 ```bash
 make BOARD=TBeam firmware
 ```
@@ -29,7 +29,7 @@ make BOARD=TBeam FLAG=TBEAM_07 firmware flash
 ```
 
 ## Installing Firmware on Device
-Flashing firmware to your ESP32 LoRa device is generally done by running the following `make`command.  The Makefile should be able to do the rest, as long as your device is connected viaa "data capable" usb connector.  A power only usb connector will not suffice.
+Flashing firmware to your ESP32 LoRa device is generally done by running the following `make`command.  The Makefile should be able to do the rest, as long as your device is connected via a "data capable" usb connector.  A power only usb connector will not suffice.
 
 ```bash
 make board=TBEAM flash
