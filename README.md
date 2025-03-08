@@ -3,7 +3,7 @@
 ## Required tools for compiling and flashing devices
 
 
-We use the Arduino CLI to compile and Flash devices, along with the esptool.py command-line tool from espressif.  
+We use the Arduino CLI to compile and Flash devices, along with the esptool command-line tool from espressif.  The makefile will install esptool if you don't have it already installed.
 
 ### Installing Arduino CLI
 
@@ -14,21 +14,23 @@ Follow the instructions given [here](https://arduino.github.io/arduino-cli/0.20/
 ### LilyGo 
 Heltec, Heltec3, T5gray, TBeam, TDeck, TWatch, TWrist, WLpaper
 
-## Compiling firmware for your device
+## Compiling the firmware for your device
 
-We've included a Makefile that should find your device, and the required tools (see above) for completing a complete firmware compilation.
+We've included a Makefile that should find your device, and the required tools for completing a firmware compilation.
 
-Go to the loramesh directory, and then run the following command, replacing `TBeam` with the appropriate board name for your device (see Supported Devices).
+Go to the loramesh directory, and then run the following command, replacing `TDeck` with the appropriate board name for your device (see Supported Devices).
+
 ```bash
 make BOARD=TBeam firmware
 ```
 
 Note: If you're using an older version 07 TBeam run the following command:
 ```bash
-make BOARD=TBeam FLAG=TBEAM_07 firmware flash
+make BOARD=TBeam FLAG=TBEAM_07 firmware
 ```
 
-## Installing Firmware on Device
+## Installing the Firmware on your device
+
 Flashing firmware to your ESP32 LoRa device is generally done by running the following `make`command.  The Makefile should be able to do the rest, as long as your device is connected via a "data capable" usb connector.  A power only usb connector will not suffice.
 
 ```bash
@@ -54,15 +56,23 @@ linux
 ls /dev/ttyUSB*
 ```
 
-the new device should show up in this list. Please open an GitHub issue and give us this information and we will add it to the Makefile.
+the new device should show up in this list. Please open a GitHub issue and give us this information and we will add it to the Makefile.
 
-## Find your Arduino CLI install
+### Find your Arduino CLI install
 
 Run the following command, this may also be useful information.  If it does not find anything please see the section on installing the Arduino CLI.
 ```bash
 which arduino-cli
 ```
 
+### Add user into dialout or uucp group
+In Linux, if you get errors about not being able to flash the device, you may need to add your user to the UUCP usergroup:
+
+```
+gpasswd -d your_username uucp
+```
+
+### Other errors
 Otherwise open an issue and let us know what was discovered.  Thanks!
 
 
