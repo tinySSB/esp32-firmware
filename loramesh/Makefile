@@ -47,7 +47,7 @@ PLATFORM_TXT_FILE=$(shell find $(ARDUINO_ESP_DIR)/hardware/esp32 -name 'platform
 
 # ---------------------------------------------------------------------------
 
-ESPTOOL=$(shell find $(ARDUINO_ESP_DIR)/tools -name "esptool";)
+ESPTOOL=$(shell find $(ARDUINO_ESP_DIR)/tools -name "esptool*" -type f;)
 BOOTAPP0PATH=$(shell find $(ARDUINO_ESP_DIR)/hardware -name "boot_app0.bin";)
 
 ifndef BOARD
