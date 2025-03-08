@@ -18,12 +18,8 @@ Heltec, Heltec3, T5gray, TBeam, TDeck, TWatch, TWrist, WLpaper
 
 We've included a Makefile that should find your device, and the required tools for completing a firmware compilation.
 
-<<<<<<< HEAD
-Go to the loramesh directory, and then run the following command, replacing `TDeck` with the appropriate board name for your device (see Supported Devices).
-
-=======
 Go to the loramesh directory, and then run the following command, replacing `TBeam` with the appropriate board name for your device (see Supported Devices).
->>>>>>> 2fd8667 (Readme cleanup; find all esptool options in one go.)
+
 ```bash
 make BOARD=TBeam firmware
 ```
