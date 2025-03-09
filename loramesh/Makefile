@@ -36,6 +36,8 @@ ARDUINO_ESP_DIR=$(ARDUINO_DATA)/packages/esp32
 
 ifeq ("$(wildcard $(ARDUINO_ESP_DIR))","")
   $(info "installing the esp32:esp32 platform for Arduino, please be patient")
+  X=$(shell arduino-cli core update-index --config-file arduino-cli.yaml)
+  $(info "$(X)")	
   X=$(shell arduino-cli core install esp32:esp32;)
   $(info "$(X)")
 endif
@@ -45,12 +47,7 @@ PLATFORM_TXT_FILE=$(shell find $(ARDUINO_ESP_DIR)/hardware/esp32 -name 'platform
 
 # ---------------------------------------------------------------------------
 
-OS=$(shell uname;)
-ifneq ($(OS), Darwin)
-  ESPTOOL_EXT=.py
-endif
-
-ESPTOOL=$(shell find $(ARDUINO_ESP_DIR)/tools -name "esptool$(ESPTOOL_EXT)";)
+ESPTOOL=$(shell find $(ARDUINO_ESP_DIR)/tools -name "esptool*" -type f;)
 BOOTAPP0PATH=$(shell find $(ARDUINO_ESP_DIR)/hardware -name "boot_app0.bin";)
 
 ifndef BOARD
