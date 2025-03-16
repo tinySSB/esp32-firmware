@@ -121,16 +121,18 @@ void hw_init()
     fused_radio.is_62 = true;
     Serial.println("RadioLib sx1262 init success!");
   } else {
-    Serial.printf("RadioLib sx1262 init did not work (code %d), trying sx1276\r\n", state);
-    state = radio_sx1276.begin();
-    if (state == RADIOLIB_ERR_NONE) {
-      fused_radio.is_62 = false;
-      Serial.println("RadioLib sx1276 init success!");
-    } else while (true) {
-      Serial.print(F("RadioLib for both sx1276 and sx1262 failed, code "));
-      Serial.println(state);
-      delay(2000);
-    }
+    Serial.printf("RadioLib sx1262 init did not work (code %d)", state);
+
+    // Serial.printf("RadioLib sx1262 init did not work (code %d), trying sx1276\r\n", state);
+    // state = radio_sx1276.begin();
+    // if (state == RADIOLIB_ERR_NONE) {
+    //   fused_radio.is_62 = false;
+    //   Serial.println("RadioLib sx1276 init success!");
+    // } else while (true) {
+    //   Serial.print(F("RadioLib for both sx1276 and sx1262 failed, code "));
+    //   Serial.println(state);
+    //   delay(2000);
+    // }
   }
   
 }

@@ -72,17 +72,20 @@
 
 // try out both:
 # include "RadioLib.h"
-# define USING_SX1276 // 868/916 MHz
-  extern SX1276 radio_sx1276;
+// # define USING_SX1276 // 868/916 MHz
+//   extern SX1276 radio_sx1276;
 # define USING_SX1262 // better Semtec chip, used in newer TBeams
   extern SX1262 radio_sx1262;
 
 extern class RadioChoice {
 public:
   int is_62;
-#define _method0V(M)   { if (is_62) radio_sx1262.M(); else radio_sx1276.M(); }
-#define _method0I(M)   { return is_62 ? radio_sx1262.M() : radio_sx1276.M(); }
-#define _method1(M,P) { return is_62 ? radio_sx1262.M(P):radio_sx1276.M(P); }
+// #define _method0V(M)   { if (is_62) radio_sx1262.M(); else radio_sx1276.M(); }
+// #define _method0I(M)   { return is_62 ? radio_sx1262.M() : radio_sx1276.M(); }
+// #define _method1(M,P) { return is_62 ? radio_sx1262.M(P):radio_sx1276.M(P); }
+#define _method0V(M)   { radio_sx1262.M(); }
+#define _method0I(M)   { return radio_sx1262.M(); }
+#define _method1(M,P) { return radio_sx1262.M(P); }
   int setFrequency(float f)     _method1(setFrequency,f);
   int setBandwidth(int bw)      _method1(setBandwidth,bw);
   int setSpreadingFactor(int v) _method1(setSpreadingFactor,v);
@@ -98,14 +101,23 @@ public:
   int getPacketLength()         _method0I(getPacketLength);
   int getRSSI()                 _method0I(getRSSI);
   int getSNR()                  _method0I(getSNR);
+  // int readData(unsigned char *buf, int len) {
+  //   return is_62 ? radio_sx1262.readData(buf,len) : radio_sx1276.readData(buf,len);
+  // };
+  // int transmit(unsigned char *buf, int len, int a) {
+  //   return is_62 ? radio_sx1262.transmit(buf,len,a) : radio_sx1276.transmit(buf,len,a);
+  // };
+  // int begin(void) {
+  //   return is_62 ? radio_sx1262.begin() : radio_sx1276.begin();
+  // };
   int readData(unsigned char *buf, int len) {
-    return is_62 ? radio_sx1262.readData(buf,len) : radio_sx1276.readData(buf,len);
+    return radio_sx1262.readData(buf,len);
   };
   int transmit(unsigned char *buf, int len, int a) {
-    return is_62 ? radio_sx1262.transmit(buf,len,a) : radio_sx1276.transmit(buf,len,a);
+    return radio_sx1262.transmit(buf,len,a);
   };
   int begin(void) {
-    return is_62 ? radio_sx1262.begin() : radio_sx1276.begin();
+    return radio_sx1262.begin();
   };
 } fused_radio;
 
