@@ -151,6 +151,8 @@ ifndef SERIAL
     SERIAL = $(shell ls /dev/tty.usbserial-????)
   else ifeq ($(BOARD),T5gray)
     SERIAL = $(shell ls /dev/tty.usbserial-???????????)
+  else ifeq ($(BOARD),TBeam)
+    SERIAL = $(shell ls /dev/tty.usbserial-???????????)
   else ifeq ($(BOARD),TDeck)
     SERIAL = $(shell ls /dev/tty.usbmodem*)
   else ifeq ($(BOARD),TWatch)
@@ -159,9 +161,9 @@ ifndef SERIAL
     SERIAL = $(shell ls /dev/tty.usbserial-???????????)
   else ifeq ($(BOARD),WLpaper) # Heltec wireless paper 1.1
     SERIAL = $(shell ls /dev/tty.usbserial-????)
-  else # T-Beam
-    SERIAL= $(shell ls /dev/tty* | grep 'ACM\|USB\|wchusb')
   endif
+
+  SERIAL ?= $(shell ls /dev/tty* | grep 'ACM\|USB\|wchusb')
 
   # ? kill any screen/miniterm program currently having the serial port open ?
   # $(foreach var,$(SERIAL), fuser -f $(var);) ...
