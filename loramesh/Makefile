@@ -207,6 +207,10 @@ firmware:
 		-o ./build/$(FLASH_BIN)
 
 flash:
+  ifndef SERIAL
+    $(error ">> unable to detect serial port for device, make sure it is connected and drivers are installed")
+  endif
+
 	$(foreach var,$(SERIAL), \
 		$(ESPTOOL) \
 		--chip $(CHIP) \
@@ -217,6 +221,10 @@ flash:
 		0x10000 ./build/$(MAIN).bin)
 
 fullflash:
+  ifndef SERIAL
+    $(error ">> unable to detect serial port for device, make sure it is connected and drivers are installed")
+  endif
+
 	$(foreach var,$(SERIAL), \
 		$(ESPTOOL) \
 		--chip $(CHIP) \
