@@ -208,6 +208,10 @@ firmware:
 		-o ./build/$(FLASH_BIN)
 
 flash:
+  ifeq ($(SERIAL),)
+    $(error ">> no device found, please connect or install a USB-to-UART driver")
+  endif
+
 	$(foreach var,$(SERIAL), \
 		$(ESPTOOL) \
 		--chip $(CHIP) \
@@ -218,6 +222,10 @@ flash:
 		0x10000 ./build/$(MAIN).bin)
 
 fullflash:
+  ifeq ($(SERIAL),)
+    $(error ">> no device found, please connect or install a USB-to-UART driver")
+  endif
+
 	$(foreach var,$(SERIAL), \
 		$(ESPTOOL) \
 		--chip $(CHIP) \
