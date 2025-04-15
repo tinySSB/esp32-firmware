@@ -41,8 +41,8 @@ replacing `TBeam` with the board name of your device (see Supported Devices).
 
 
 ## Troubleshooting
-### Identify your serial port
-The Makefile looks for all "known" variants of device names that show up.  If your system creates a serial port name that we haven't seen then there will likely be problems.
+### Unable to detect serial port
+The Makefile looks for all "known" variants of device names that show up.  If your system does not have the correct driver installed or creates a serial port name we haven't seen yet, then there will likely be problems when flashing your device.
 
 Open up a terminal and run the following command before and after plugging in your device with an appropriate data usb cable:
 
@@ -56,7 +56,9 @@ linux
 ls /dev/ttyUSB*
 ```
 
-the new device should show up in this list. Please open a GitHub issue and give us this information and we will add it to the Makefile.
+The serial port for your device should show up in this list after you plug it in. If not, you may need to install a USB to UART driver like the one [here](https://www.silabs.com/developer-tools/usb-to-uart-bridge-vcp-drivers?tab=downloads). However, if you do see your device, please open a GitHub issue with the information you get from the `ls` command above along with your device name and we will add it to the Makefile.
+
+### Serial port If you don't see a serial port 
 
 ### Find your Arduino CLI install
 
