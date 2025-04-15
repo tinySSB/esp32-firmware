@@ -58,8 +58,6 @@ ls /dev/ttyUSB*
 
 The serial port for your device should show up in this list after you plug it in. If not, you may need to install a USB to UART driver like the one [here](https://www.silabs.com/developer-tools/usb-to-uart-bridge-vcp-drivers?tab=downloads). However, if you do see your device, please open a GitHub issue with the information you get from the `ls` command above along with your device name and we will add it to the Makefile.
 
-### Serial port If you don't see a serial port 
-
 ### Find your Arduino CLI install
 
 Run the following command, this may also be useful information.  If it does not find anything please see the section on installing the Arduino CLI.
