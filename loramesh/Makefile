@@ -164,7 +164,9 @@ ifndef SERIAL
   endif
 
   # catch all
-  SERIAL ?= $(shell ls /dev/tty* | grep 'ACM\|USB\|wchusb')
+  ifeq ($(SERIAL),)
+    SERIAL = $(shell ls /dev/tty* | grep 'ACM\|USB\|wchusb')
+  endif
 
   # ? kill any screen/miniterm program currently having the serial port open ?
   # $(foreach var,$(SERIAL), fuser -f $(var);) ...
