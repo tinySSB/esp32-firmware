@@ -145,24 +145,7 @@ else
 endif
 
 ifndef SERIAL
-  ifeq ($(BOARD),Heltec) # heltec LORA32 v2
-    SERIAL = $(shell ls /dev/tty.usbserial-????)
-  else ifeq ($(BOARD),Heltec3) # heltec LORA32 v3
-    SERIAL = $(shell ls /dev/tty.usbserial-????)
-  else ifeq ($(BOARD),T5gray)
-    SERIAL = $(shell ls /dev/tty.usbserial-???????????)
-  else ifeq ($(BOARD),TDeck)
-    SERIAL = $(shell ls /dev/tty.usbmodem*)
-  else ifeq ($(BOARD),TWatch)
-    SERIAL = $(shell ls /dev/tty.usbmodem*)
-  else ifeq ($(BOARD),TWrist)
-    SERIAL = $(shell ls /dev/tty.usbserial-???????????)
-  else ifeq ($(BOARD),WLpaper) # Heltec wireless paper 1.1
-    SERIAL = $(shell ls /dev/tty.usbserial-????)
-  else # T-Beam
-    SERIAL= $(shell ls /dev/tty* | grep 'ACM\|USB\|wchusb')
-  endif
-
+  SERIAL = $(shell ls /dev/tty* | grep 'ACM\|USB\|wchusb\|usbserial\|usbmodem')
   # ? kill any screen/miniterm program currently having the serial port open ?
   # $(foreach var,$(SERIAL), fuser -f $(var);) ...
 endif
@@ -205,6 +188,10 @@ firmware:
 		-o ./build/$(FLASH_BIN)
 
 flash:
+  ifeq ($(SERIAL),)
+    $(error ">> no device found, please connect or install a USB-to-UART driver")
+  endif
+
 	$(foreach var,$(SERIAL), \
 		$(ESPTOOL) \
 		--chip $(CHIP) \
@@ -215,6 +202,10 @@ flash:
 		0x10000 ./build/$(MAIN).bin)
 
 fullflash:
+  ifeq ($(SERIAL),)
+    $(error ">> no device found, please connect or install a USB-to-UART driver")
+  endif
+
 	$(foreach var,$(SERIAL), \
 		$(ESPTOOL) \
 		--chip $(CHIP) \
