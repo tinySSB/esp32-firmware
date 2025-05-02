@@ -4,6 +4,7 @@
 #define _INCLUDE_HARDWARE_H
 
 extern void hw_init();
+extern void hw_shutdown();
 
 // collects hardware-specific constants for all boards
 

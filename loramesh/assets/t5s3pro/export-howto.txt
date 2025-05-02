@@ -1,0 +1,14 @@
+a) go to the site  https://lvgl.io/tools/imageconverter
+   and convert the input image to a .c file, choose the following settings:
+
+   // for background etc:
+   select "LVGL v8"
+   select "CF_INDEXED_4_BIT"
+   select "C output"
+
+   // old: buttons
+   CF_ALPHA_2_BIT
+
+b) rewrite the initialization of the struct at the bottom of the file:
+
+   % awk -f c_map_to_h.awk <INPUT_FILE.c >OUTPUT_FILE.h

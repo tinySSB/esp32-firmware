@@ -4,7 +4,7 @@
 
 # make [BOARD=..] [SERIAL=/dev/tty..] {firmware} {flush}
 
-#    known boards are: Heltec, T5gray, TBeam, TDeck, TWrist
+#    known boards are: Heltec, T5gray, T5s3pro, TBeam, TDeck, TWrist
 #    serial device: we have some heuristics for setting it automatically
 
 
@@ -51,7 +51,7 @@ ESPTOOL=$(shell find $(ARDUINO_ESP_DIR)/tools -name "esptool*" -type f;)
 BOOTAPP0PATH=$(shell find $(ARDUINO_ESP_DIR)/hardware -name "boot_app0.bin";)
 
 ifndef BOARD
-  $(info ">> please specify a BOARD (Heltec, Heltec3, T5gray, TBeam, TDeck, TWatch, TWrist, WLpaper)")
+  $(info ">> please specify a BOARD (Heltec, Heltec3, T5gray, T5s3pro, TBeam, TDeck, TWatch, TWrist, WLpaper)")
   stop
 endif
 
@@ -91,6 +91,15 @@ else ifeq ($(BOARD),T5gray)
   FLASH_SIZE=4MB
   FLASH_OFFS=0x1000
   FLAGS_BOARD=-DTINYSSB_BOARD_T5GRAY -DESP32 -DCORE_DEBUG_LEVEL=0 -DARDUINO_RUNNING_CORE=1 -DARDUINO_EVENT_RUNNING_CORE=1 -DARDUINO_USB_CDC_ON_BOOT=0
+
+else ifeq ($(BOARD),T5s3pro)
+  CHIP=esp32s3
+  FQBN=esp32:esp32:esp32s3:PSRAM=opi,FlashSize=16M,CDCOnBoot=cdc
+  PARTITIONS_CSV=partitions-t5s3pro.csv
+  MAX_UPLOAD=4194304 # 4MB
+  FLASH_SIZE=16MB
+  FLASH_OFFS=0x0
+  FLAGS_BOARD=-DTINYSSB_BOARD_T5S3PRO
 
 else ifeq ($(BOARD),TBeam)
   BAUD=460800
@@ -151,6 +160,8 @@ ifndef SERIAL
     SERIAL = $(shell ls /dev/tty.usbserial-????)
   else ifeq ($(BOARD),T5gray)
     SERIAL = $(shell ls /dev/tty.usbserial-???????????)
+  else ifeq ($(BOARD),T5s3pro)
+    SERIAL = $(shell ls /dev/tty.usbmodem*)
   else ifeq ($(BOARD),TDeck)
     SERIAL = $(shell ls /dev/tty.usbmodem*)
   else ifeq ($(BOARD),TWatch)
@@ -173,7 +184,7 @@ EXTRA_CPP_FLAGS=--build-property compiler.cpp.extra_flags="$(FLAGS_PLATFORM) $(F
 
 all:
 	$(info )
-	$(info "usage:  make [BOARD=Heltec|Heltec3|T5gray|TBeam|TDeck|TWatch|TWrist|WLpaper] firmware|flash|fullflash")
+	$(info "usage:  make [BOARD=Heltec|Heltec3|T5gray|T5s3pro|TBeam|TDeck|TWatch|TWrist|WLpaper] firmware|flash|fullflash")
 	$(info )
 
 monitor:
@@ -215,6 +226,13 @@ flash:
 		0x10000 ./build/$(MAIN).bin)
 
 fullflash:
+	$(ESPTOOL) --chip $(CHIP) merge_bin \
+		--output ./build/$(MAIN).merged.bin \
+		--flash_size $(FLASH_SIZE) \
+		0x0 ./build/$(MAIN).bootloader.bin \
+		0x8000 ./build/$(MAIN).partitions.bin \
+		0x10000 ./build/$(MAIN).bin
+
 	$(foreach var,$(SERIAL), \
 		$(ESPTOOL) \
 		--chip $(CHIP) \

@@ -60,6 +60,22 @@
 
 // ---------------------------------------------------------------------------
 
+#ifdef TINYSSB_BOARD_T5S3PRO
+
+# define DEVICE_MAKE "Lilygo T5S3-4.7-e-paper-PRO"
+# define HAS_BLE
+// # define HAS_GPS
+# define HAS_LORA
+
+# define USE_RADIO_LIB
+
+# define USING_SX1262 // 868/916 MHz
+# define radio sx1262_radio
+
+#endif // TINYSSB_BOARD_T5S3PRO
+
+// ---------------------------------------------------------------------------
+
 #ifdef TINYSSB_BOARD_TBEAM
 // https://www.lilygo.cc/products/t-beam-v1-1-esp32-lora-module
 # define DEVICE_MAKE "Lilygo T-Beam"

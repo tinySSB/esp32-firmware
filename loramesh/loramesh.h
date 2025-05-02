@@ -5,6 +5,7 @@
 
 #include "src/ui-heltec.h"
 #include "src/ui-t5gray.h"
+#include "src/ui-t5s3pro.h"
 #include "src/ui-tbeam.h"
 #include "src/ui-tdeck.h"
 #include "src/ui-twatch.h"
@@ -12,7 +13,6 @@
 #include "src/ui-wlpaper.h"
 
 #include "src/hardware.h"
-
 
 #if !defined(UTC_OFFSET)
 # define UTC_OFFSET ""
@@ -42,6 +42,10 @@ Repo2Class *theRepo;
 GOsetClass *theGOset;
 PeersClass *thePeers;
 SchedClass *theSched;
+
+#if defined(TINYSSB_BOARD_T5S3PRO)
+App_TAV_Class *theTAV;
+#endif
 
 // ---------------------------------------------------------------------------
 
@@ -103,11 +107,13 @@ void _wr(File f, char *fmt, va_list ap)
 
 void lora_log_wr(char *fmt, ...)
 {
+  if (!lora_log) return;
   va_list args; va_start(args, fmt); _wr(lora_log, fmt, args); va_end(args);
 }
 
 void peers_log_wr(char *fmt, ...)
 {
+  if (!peers_log) return;
   va_list args; va_start(args, fmt); _wr(peers_log, fmt, args); va_end(args);
 }
 
@@ -131,6 +137,33 @@ void time_stamp()
     next_serial_ts = millis() + SERIAL_TS_INTERVAL;
   }
 }
+
+// ---------------------------------------------------------------------------
+
+#if defined(TINYSSB_BOARD_TWATCH) || defined(TINYSSB_BOARD_T5S3PRO)
+static void cb_new_log_entry(unsigned char *fid, int seqnr)
+{
+  Serial.printf("# cb_new_log_entry %s:%d\r\n", to_hex(fid,10), seqnr);
+  ReplicaClass *r = theRepo->fid2replica(fid);
+  if (r) {
+    int max_sz;
+    int sz = r->get_content_len(seqnr, &max_sz);
+    Serial.printf("#   sz=%d max_sz=%d\r\n", sz, max_sz);
+    if (sz > 0 && sz < 2024 && max_sz == sz) { // only consider full entries
+      unsigned char *buf = r->read(seqnr, &max_sz);
+      if (buf != NULL) {
+        struct bipf_s *b = bipf_loads(buf, max_sz);
+        if (b != NULL) {
+          // Serial.printf("#   %s\r\n", bipf2String(b));
+          theTAV->incoming(fid, b);
+          bipf_free(b);
+        }
+        free(buf);
+      }
+    }
+  }
+}
+#endif
 
 // ---------------------------------------------------------------------------
 
@@ -169,12 +202,14 @@ void setup()
   hw_init();
 
   Serial.println("after hw_init");
-  delay(3500);
+  // delay(3500);
 
 #if defined(TINYSSB_BOARD_HELTEC) || defined(TINYSSB_BOARD_HELTEC3)
   theUI    = new UI_Heltec_Class();
 #elif defined(TINYSSB_BOARD_T5GRAY)
   theUI    = new UI_T5gray_Class();
+#elif defined(TINYSSB_BOARD_T5S3PRO)
+  theUI    = new UI_T5s3pro_Class();
 #elif defined(TINYSSB_BOARD_TBEAM)
   theUI    = new UI_TBeam_Class();
 #elif defined(TINYSSB_BOARD_TDECK)
@@ -190,11 +225,11 @@ void setup()
   // theUI->spinner(true);
   // theUI->show_boot_msg("mounting file system");
 
-  delay(500);
+  // delay(500);
 
   // --- file system
 
-  if (!MyFS.begin(true))
+  if (!MyFS.begin(true, "/littlefs", 20))
     msg = "could not mount file system, partition was reformatted";
   else
     msg = "file system was mounted";
@@ -221,8 +256,8 @@ void setup()
   msg = "** starting";
   lora_log = MyFS.open(LORA_LOG_FILENAME, FILE_APPEND);
   lora_log_wr(msg);
-  peers_log = MyFS.open(PEERS_DATA_FILENAME, FILE_APPEND);
-  peers_log_wr(msg);
+  // peers_log = MyFS.open(PEERS_DATA_FILENAME, FILE_APPEND);
+  // peers_log_wr(msg);
 
   // --- IO init
   
@@ -272,17 +307,56 @@ void setup()
 
   theUI->show_boot_msg("load feed data ...");
   theRepo->load();
+
+
+#if defined(TINYSSB_BOARD_TWATCH) || defined(TINYSSB_BOARD_T5S3PRO)
+#if defined(TINYSSB_BOARD_TWATCH)
+    UI_TWatch_Class *ui  = (UI_TWatch_Class*) theUI;
+#else
+    UI_T5s3pro_Class *ui = (UI_T5s3pro_Class*) theUI;
+#endif
+  // if we have an ED25519 key pair in the NVS, make sure we have a feed
+  if ( ui->myid_valid ) {
+    unsigned char *fid = ui->myid_pk;
+    ReplicaClass *r = theRepo->fid2replica(fid);
+    if (!r) {
+      Serial.printf("creating new replica for %s\r\n",
+                    to_hex(ui->myid_pk,32));
+      theRepo->add_replica(fid);
+      theGOset->populate(fid);
+      theGOset->populate(NULL); // triggers sorting, and setting the want_dmx
+      r = theRepo->fid2replica(fid);
+
+      // announce our name
+      struct bipf_s *lst = bipf_mkList();
+      bipf_list_append(lst, bipf_mkString("IAM"));
+#if defined(TINYSSB_BOARD_TWATCH)
+      bipf_list_append(lst, bipf_mkString("cft's SSB.watch"));
+#elif defined(TINYSSB_BOARD_T5S3PRO)
+      bipf_list_append(lst, bipf_mkString("cft's T5s3pro"));
+#endif
+      int len = bipf_encodingLength(lst);
+      unsigned char *buf = (unsigned char *) malloc(len);
+      bipf_encode(buf, lst);
+      bool rc = r->write(buf, len, ui->my_signing_fct);
+      bipf_free(lst);
+      free(buf);
+    }
+    // else if (r->get_next_seq() > 25) // purge, for dev purposes
+    //   theRepo->reset(FEED_DIR);
+  }
+#endif
+
   Serial.printf("\r\n   Repo: %d feeds, %d entries, %d chunks\r\n",
                 theRepo->rplca_cnt, theRepo->entry_cnt, theRepo->chunk_cnt);
-  // theUI->show_repo_stats(theRepo->rplca_cnt,
-  //                      theRepo->entry_cnt, theRepo->chunk_cnt, 1);
-  
   // listDir(MyFS, "/", 2); // FEED_DIR, 2);
+
   theUI->show_boot_msg("load app data ...");
-  // the_TVA_app = new App_TVA_Class(posts);
-  // the_TVA_app->restream();
-
-
+#if defined(TINYSSB_BOARD_TWATCH) || defined(TINYSSB_BOARD_T5S3PRO)
+  Serial.println("# restream all logs (no persisted TAV state, yet)");
+  theTAV = new App_TAV_Class();
+  theTAV->restream();
+#endif
   theUI->spinner(false);
   theUI->buzz();
 
@@ -291,23 +365,36 @@ void setup()
   Serial.println(msg);
   delay(1000);
 
+  theUI->boot_ended();
   theUI->refresh();
 }
 
+char mute_io = 0;
+uint64_t next_refresh;
 
 void loop()
 {
-  io_loop();        // check for received packets
-  io_proc();        // process received packets
-  theSched->tick(); // send pending packets
+    if (!mute_io) {
+        io_loop();        // check for received packets
+        io_proc();        // process received packets
+        theSched->tick(); // send pending packets
+    }
 
-  theUI->loop();
+    theUI->loop();
 
-  if (Serial.available())
-    cmd_rx(Serial.readString());
+    if (Serial.available())
+        cmd_rx(Serial.readString());
 
-  time_stamp();
-  delay(5);
+    time_stamp();
+    delay(5);
+
+    /*
+    if (millis() > next_refresh) {
+        epd_clear();
+        theUI->refresh();
+        next_refresh = millis() + 5000;
+    }
+    */
 }
 
 // eof

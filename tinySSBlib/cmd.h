@@ -8,7 +8,7 @@
 
 #include "tinySSBlib.h"
 
-void listDir(fs::FS &fs, const char *dirname, uint8_t levels);
+void listDir(File dir, uint8_t levels);
 void cmd_rx(String cmd);
 
 #endif

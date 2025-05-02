@@ -13,7 +13,8 @@ public:
   virtual void buzz() {};
   virtual void loop() {};    // for screen animations
   virtual void refresh() {}; // force refresh (of current screen)
-  virtual void show_boot_msg(char *msg) {};
+  virtual void show_boot_msg(char *msg) { Serial.printf("# %s\r\n", msg); };
+  virtual void boot_ended() {};
 
   // general:
   void show_node_name(char *s);
@@ -31,7 +32,10 @@ public:
 
   // peers screen:
   virtual void heard_peer(char *id, int rssi, float snr) {};
-  
+
+  // apps:
+  virtual void add_new_post(unsigned char *fid, char *txt, int t, int pos) {};
+
   char *node_name;
   char *time;
   float gps_lon, gps_lat, gps_ele; 

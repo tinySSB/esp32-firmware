@@ -1,13 +1,13 @@
 // ui-heltec.cpp
 
-#include "ui-heltec.h"
-
 #if defined(TINYSSB_BOARD_HELTEC) || defined(TINYSSB_BOARD_HELTEC3)
 
 #include <ctype.h>   // for toupper()
 #include <cstdarg>   // for va_list()
 
 #include "hardware.h"
+#include "ui-heltec.h"
+
 #include "lib/cmd.h"
 
 // ---------------------------------------------------------------------------

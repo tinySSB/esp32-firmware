@@ -7,34 +7,28 @@
 
 #include "cmd.h"
 
-void listDir(fs::FS &fs, const char *dirname, uint8_t levels)
+void listDir(File dir, uint8_t levels)
 {
-  Serial.printf("Listing directory: %s\r\n", dirname);
+    Serial.printf("Listing directory: %s\r\n", dir.path());
 
-  File root = fs.open(dirname);
-  if (!root) {
-    Serial.println("- failed to open directory");
-    return;
-  }
-  if (!root.isDirectory()) {
-    Serial.println(" - not a directory");
-    return;
-  }
-
-  File file = root.openNextFile();
-  int  cnt = 0;
-  while (file) {
-    cnt++;
-    if (file.isDirectory()) {
-      Serial.printf("  DIR : %s\r\n", file.name());
-      if (levels)
-        listDir(fs, file.path(), levels -1);
-    } else
-      Serial.printf("  FILE: %s\tSIZE: %d\r\n", file.name(), file.size());
-    file = root.openNextFile();
-  }
-  if (cnt == 0)
-    Serial.printf("  EMPTY\r\n");
+    if (!dir)
+        return;
+    dir.rewindDirectory();
+    File file = dir.openNextFile(FILE_READ);
+    int  cnt = 0;
+    while (file) {
+        cnt++;
+        if (file.isDirectory()) {
+            Serial.printf("  DIR : %s\r\n", file.name());
+            if (levels)
+                listDir(file, levels - 1);
+        } else
+            Serial.printf("  FILE: %s\tSIZE: %d\r\n", file.name(), file.size());
+        file.close();
+        file = dir.openNextFile(FILE_READ);
+    }
+    if (cnt == 0)
+        Serial.printf("  EMPTY\r\n");
 }
 
 // --------------------------------------------------------------------------
@@ -121,11 +115,16 @@ void cmd_rx(String cmd) {
       }
       break;
 
-    case 'f': // Directory dump
+    case 'f': { // Directory dump
       Serial.printf("File system: %d total bytes, %d used\r\n",
                     MyFS.totalBytes(), MyFS.usedBytes());
-      listDir(MyFS, "/", 2); // FEED_DIR, 2);
+      File root = MyFS.open("/feeds");
+      if (root) {
+          listDir(root, 3); // FEED_DIR, 2);
+          root.close();
+      }
       break;
+    }
 
     case 'i': { // config values
       Serial.printf("Config of node %s:\r\n", ssid);
